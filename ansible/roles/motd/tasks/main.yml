@@ -6,6 +6,9 @@
       - update-motd
       - figlet
       - lolcat
+      - hddtemp
+      - fail2ban
+    become: true
 - name: Ensure PrintMotd is enabled
   lineinfile:
     path: /etc/ssh/sshd_config
