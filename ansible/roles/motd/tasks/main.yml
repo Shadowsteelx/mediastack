@@ -68,7 +68,7 @@
 
 - name: Copy MOTD files
   ansible.builtin.copy:
-    src: {{ item }}
+    src: "{{ item }}"
     dest: /etc/update-motd.d/
     force: true
     mode: 0775
