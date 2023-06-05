@@ -1,0 +1,15 @@
+---
+- name: Install required packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - update-motd
+      - figlet
+      - lolcat
+- name: Ensure PrintMotd is enabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "PrintMotd no"
+    search_string: "PrintMotd"
+    state: present
+...
