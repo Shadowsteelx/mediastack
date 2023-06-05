@@ -6,8 +6,11 @@
       - update-motd
       - figlet
       - lolcat
-      - drivetemp
       - fail2ban
+- name: Add the drivetmep module
+  community.general.modprobe:
+    name: drivetemp
+    state: present
 - name: Ensure PrintMotd is enabled
   lineinfile:
     path: /etc/ssh/sshd_config
