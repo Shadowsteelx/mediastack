@@ -7,14 +7,21 @@
       - figlet
       - lolcat
       - fail2ban
+      - lm-sensors
 - name: Add the drivetmep module
   community.general.modprobe:
     name: drivetemp
     state: present
+- name: Run sensors-detect
+  ansible.builtin.command: sensors-detect --auto
 - name: Ensure PrintMotd is enabled
   lineinfile:
     path: /etc/ssh/sshd_config
     line: "PrintMotd yes"
     search_string: "PrintMotd"
     state: present
+- name: Clone forked MOTD scripts
+  git:
+    repo: https://github.com/Shadowsteelx/motd.git
+    dest: /etc/update-motd.d/
 ...
