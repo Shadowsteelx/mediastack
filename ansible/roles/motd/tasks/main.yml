@@ -14,7 +14,7 @@
 - name: Ensure PrintMotd is enabled
   lineinfile:
     path: /etc/ssh/sshd_config
-    line: "PrintMotd no"
+    line: "PrintMotd yes"
     search_string: "PrintMotd"
     state: present
 ...
