@@ -17,6 +17,15 @@
 - name: Run sensors-detect
   ansible.builtin.command: sensors-detect --auto
 
+- name: Initialize lxd
+  ansible.builtin.command: lxd init --auto
+
+- name: Enable fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: yes
+
 - name: Ensure PrintMotd is enabled
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -97,4 +106,7 @@
     regexp: '^PrintLastLog\s?'
     line: 'PrintLastLog no'
     state: present
+
+- name: Update motd
+  ansible.builtin.command: update-motd
 ...
