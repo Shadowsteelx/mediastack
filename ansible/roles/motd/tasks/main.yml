@@ -72,7 +72,7 @@
     dest: /etc/update-motd.d/
     force: true
     mode: 0775
-  with_fileglob: "*-*"
+  with_fileglob: "*/srv/git/motd/*-*"
 
 - name: Check if '/etc/ssh/sshd_config' exists
   ansible.builtin.stat:
