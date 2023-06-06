@@ -1,8 +1,0 @@
----
-- name: Install required packages
-  ansible.builtin.apt:
-    state: present
-    name:
-      - fail2ban
-      - hddtemp
-...
