@@ -1,119 +1,115 @@
 ---
-- name: disks
-  tasks:
-    - name: Collect disks
-      ansible.builtin.set_fact:
-        disks: "{{ disks | default({}) | combine({item.key:item.value.serial}) }}"
-      when:
-      - item.key.startswith("sd") or item.key.startswith("nvme")
-      with_dict: "{{ ansible_devices }}"
-    - name: Collect parity disks
-      ansible.builtin.set_fact:
-        parity_disks: "{{ parity_disks|default([]) + ['/dev/' + item.key] }}"
-      when: item.value in storage.parity.serials
-      with_dict: "{{ disks }}"
-    - name: Collect data disks
-      ansible.builtin.set_fact:
-        data_disks: "{{ data_disks|default([]) + ['/dev/' + item.key] }}"
-      when:
-      - not item.value in storage.parity.serials
-      - item.key.startswith("sd")
-      with_dict: "{{ disks }}"
-    - name: Collect appdata disks
-      ansible.builtin.set_fact:
-        appdata_disks: "{{ appdata_disks|default([]) + ['/dev/' + item.key] }}"
-      when: item.value in storage.appdata.serials
-      with_dict: "{{ disks }}"
-    - name: Create AppData directories
-      ansible.builtin.file:
-        path: "{{ item.paths.path }}"
-        state: directory
-      with_dict: "{{ storage.appdata }}"
-    - name: Create volume group
-      community.general.lvg:
-        vg: vg_appdata
-        pvs: "{{ appdata_disks | join(',') }}"
-    - name: Create opt volume
-      community.general.lvol:
-        vg: vg_appdata
-        lv: lv_opt
-        opts: "--type raid0 --stripes {{ appdata_disks | length }}"
-        size: 20%VG
-    - name: Create backups volume
-      community.general.lvol:
-        vg: vg_appdata
-        lv: lv_backups
-        opts: "--type raid0 --stripes {{ appdata_disks | length }}"
-        size: 20%VG
-    - name: Create downloads volume
-      community.general.lvol:
-        vg: vg_appdata
-        lv: lv_downloads
-        opts: "--type raid0 --stripes {{ appdata_disks | length }}"
-        size: 60%VG
-    - name: Set opt filesystem
-      community.general.filesystem:
-        dev: /dev/mapper/vg_appdata-lv_opt
-        fstype: btrfs
-    - name: Set backups filesystem
-      community.general.filesystem:
-        dev: /dev/mapper/vg_appdata-lv_backups
-        fstype: ext4
-    - name: Set downloads filesystem
-      community.general.filesystem:
-        dev: /dev/mapper/vg_appdata-lv_downloads
-        fstype: ext4
-
-    - name: Create backups directory
-      ansible.builtin.file:
-        path: /mnt/local/backups
-        state: directory
-    - name: Create downloads directory
-      ansible.builtin.file:
-        path: /mnt/local/downloads
-        state: directory
-    - name: Mount opt
-      ansible.posix.mount:
-        state: mounted
-        backup: yes
-        dump: 0
-        fstype: btrfs
-        opts: defaults
-        passno: 2
-        path: /opt
-        src: /dev/mapper/vg_appdata-lv_opt
-    - name: Mount backups
-      ansible.posix.mount:
-        state: mounted
-        backup: yes
-        dump: 0
-        fstype: ext4
-        opts: defaults
-        passno: 2
-        path: /mnt/local/backups
-        src: /dev/mapper/vg_appdata-lv_backups
-    - name: Mount downloads
-      ansible.posix.mount:
-        state: mounted
-        backup: yes
-        dump: 0
-        fstype: ext4
-        opts: defaults
-        passno: 2
-        path: /mnt/local/downloads
-        src: /dev/mapper/vg_appdata-lv_downloads
-    - name: Create partitions for spinning disks
-      community.general.parted:
-        device: "{{ item }}"
-        label: gpt
-        number: 1
-        state: present
-        fs_type: xfs
-      loop: "{{ spinning_disks }}"
-    - name: Create filesystem for spinning disks
-      community.general.filesystem:
-        dev: "{{ item + '1' }}"
-        fstype: xfs
-      loop: "{{ spinning_disks }}"
-
+- name: Collect disks
+  ansible.builtin.set_fact:
+    disks: "{{ disks | default({}) | combine({item.key:item.value.serial}) }}"
+  when:
+  - item.key.startswith("sd") or item.key.startswith("nvme")
+  with_dict: "{{ ansible_devices }}"
+- name: Collect parity disks
+  ansible.builtin.set_fact:
+    parity_disks: "{{ parity_disks|default([]) + ['/dev/' + item.key] }}"
+  when: item.value in storage.parity.serials
+  with_dict: "{{ disks }}"
+- name: Collect data disks
+  ansible.builtin.set_fact:
+    data_disks: "{{ data_disks|default([]) + ['/dev/' + item.key] }}"
+  when:
+  - not item.value in storage.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
+- name: Collect appdata disks
+  ansible.builtin.set_fact:
+    appdata_disks: "{{ appdata_disks|default([]) + ['/dev/' + item.key] }}"
+  when: item.value in storage.appdata.serials
+  with_dict: "{{ disks }}"
+- name: Create AppData directories
+  ansible.builtin.file:
+    path: "{{ item.paths.path }}"
+    state: directory
+  with_dict: "{{ storage.appdata }}"
+- name: Create volume group
+  community.general.lvg:
+    vg: vg_appdata
+    pvs: "{{ appdata_disks | join(',') }}"
+- name: Create opt volume
+  community.general.lvol:
+    vg: vg_appdata
+    lv: lv_opt
+    opts: "--type raid0 --stripes {{ appdata_disks | length }}"
+    size: 20%VG
+- name: Create backups volume
+  community.general.lvol:
+    vg: vg_appdata
+    lv: lv_backups
+    opts: "--type raid0 --stripes {{ appdata_disks | length }}"
+    size: 20%VG
+- name: Create downloads volume
+  community.general.lvol:
+    vg: vg_appdata
+    lv: lv_downloads
+    opts: "--type raid0 --stripes {{ appdata_disks | length }}"
+    size: 60%VG
+- name: Set opt filesystem
+  community.general.filesystem:
+    dev: /dev/mapper/vg_appdata-lv_opt
+    fstype: btrfs
+- name: Set backups filesystem
+  community.general.filesystem:
+    dev: /dev/mapper/vg_appdata-lv_backups
+    fstype: ext4
+- name: Set downloads filesystem
+  community.general.filesystem:
+    dev: /dev/mapper/vg_appdata-lv_downloads
+    fstype: ext4
+- name: Create backups directory
+  ansible.builtin.file:
+    path: /mnt/local/backups
+    state: directory
+- name: Create downloads directory
+  ansible.builtin.file:
+    path: /mnt/local/downloads
+    state: directory
+- name: Mount opt
+  ansible.posix.mount:
+    state: mounted
+    backup: yes
+    dump: 0
+    fstype: btrfs
+    opts: defaults
+    passno: 2
+    path: /opt
+    src: /dev/mapper/vg_appdata-lv_opt
+- name: Mount backups
+  ansible.posix.mount:
+    state: mounted
+    backup: yes
+    dump: 0
+    fstype: ext4
+    opts: defaults
+    passno: 2
+    path: /mnt/local/backups
+    src: /dev/mapper/vg_appdata-lv_backups
+- name: Mount downloads
+  ansible.posix.mount:
+    state: mounted
+    backup: yes
+    dump: 0
+    fstype: ext4
+    opts: defaults
+    passno: 2
+    path: /mnt/local/downloads
+    src: /dev/mapper/vg_appdata-lv_downloads
+- name: Create partitions for spinning disks
+  community.general.parted:
+    device: "{{ item }}"
+    label: gpt
+    number: 1
+    state: present
+    fs_type: xfs
+  loop: "{{ spinning_disks }}"
+- name: Create filesystem for spinning disks
+  community.general.filesystem:
+    dev: "{{ item + '1' }}"
+    fstype: xfs
+  loop: "{{ spinning_disks }}"
 ...
