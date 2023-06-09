@@ -1,0 +1,24 @@
+---
+storage:
+  appdata:
+    paths:
+      opt:
+        path: /opt/
+        size: 20%VG
+      backup:
+        path: /mnt/local/backups
+        size: 20%VG
+      downloads:
+        path: /mnt/local/downloads
+        size: 60%VG
+    serials:
+    - "xxxxxxxxxxxxxxx"
+    - "yyyyyyyyyyyyyyy"
+    - "zzzzzzzzzzzzzzz"
+  parity:
+    path: /mnt/snapraid/parity
+    serials:
+    - "xxxxxxxxxxxxxxx"
+  media:
+    path: /mnt/snapraid/pool
+...

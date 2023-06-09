@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  vars_files:
+    - ['storage.yml', 'defaults/storage.yml.default']
+  roles:
+    - { role: storage, tags: ['storage'] }
+...
