@@ -1,0 +1,4 @@
+---
+timezone: "America/Los_Angeles"
+disable_sudo_password: True
+...

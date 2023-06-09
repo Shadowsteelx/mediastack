@@ -2,6 +2,8 @@
 - hosts: localhost
   vars_files:
     - ['storage.yml', 'defaults/storage.yml.default']
+    - ['general.yml', 'defaults/general.yml.default']
   roles:
+    - { role: common, tags: ['common'] }
     - { role: storage, tags: ['storage'] }
 ...
