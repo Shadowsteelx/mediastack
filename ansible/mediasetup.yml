@@ -3,7 +3,9 @@
   vars_files:
     - ['storage.yml', 'defaults/storage.yml.default']
     - ['general.yml', 'defaults/general.yml.default']
+    - ['snapraid.yml', 'defaults/snapraid.yml.default']
   roles:
     - { role: common, tags: ['common'] }
     - { role: storage, tags: ['storage'] }
+    - { role: snapraid, tags: ['snapraid'] }
 ...

@@ -1,0 +1,6 @@
+---
+excludes:
+- *.unrecoverable
+- /tmp/
+- /lost+found/
+...

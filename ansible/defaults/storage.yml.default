@@ -24,10 +24,12 @@ storage:
     - "zzzzzzzzzzzzzzz"
   parity:
     path: /mnt/snapraid/parity
+    prefix: disk-
     filesystem: xfs
     serials:
     - "xxxxxxxxxxxxxxx"
   media:
     path: /mnt/snapraid/pool
-    filesystem: ext4
+    prefix: disk-
+    filesystem: xfs
 ...

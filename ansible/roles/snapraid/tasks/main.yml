@@ -1,0 +1,20 @@
+---
+- name: Install SnapRAID packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - "snapraid"
+      - "python3-markdown"
+      - "curl"
+      - "apt-transport-https"
+  ignore_errors: true
+
+- name: Add hd-idle repo key
+  ansible.builtin.apt_key:
+    url: http://adelolmo.github.io/andoni.delolmo@gmail.com.gpg.key
+    state: present
+- name: Add hd-idle repository
+  apt_repository:
+    repo: "{{ 'deb ' + 'http://adelolmo.github.io/' + ansible_distribution_release + ' ' + ansible_distribution_release + ' main' }}"
+    state: present
+...

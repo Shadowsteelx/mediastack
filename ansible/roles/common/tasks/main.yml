@@ -1,7 +1,7 @@
 ---
 - name: Set timezone
   community.general.timezone:
-    name: {{ timezone }}
+    name: "{{ timezone }}"
 - name: User Account | Set sudo group to 'NOPASSWD'
   ansible.builtin.lineinfile:
     path: "/etc/sudoers"
@@ -9,4 +9,10 @@
     line: '%sudo   ALL=(ALL) NOPASSWD:ALL'
     state: present
   when: disable_sudo_password
+- name: Install common packages
+  ansible.builtin.apt:
+    state: present
+    name:
+      - "unzip"
+  ignore_errors: true
 ...

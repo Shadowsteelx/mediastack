@@ -1,0 +1,14 @@
+# Example: parity /mnt/diskp/snapraid.parity
+# PARITY DISKS BELOW
+
+# Example: content /mnt/disk1/snapraid.content
+# CONTENT FILES BELOW
+
+# Example: data d1 /mnt/disk1/
+# DATA DISKS BELOW
+{% for opt in floaterm_options %}
+let g:{{ opt }} = {{ floaterm_options[opt] }}
+{% endfor %}
+
+# Example: /lost+found/
+# EXCLUDES BELOW
