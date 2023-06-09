@@ -1,6 +1,6 @@
 ---
 excludes:
-- *.unrecoverable
-- /tmp/
-- /lost+found/
+- "*.unrecoverable"
+- "/tmp/"
+- "/lost+found/"
 ...
