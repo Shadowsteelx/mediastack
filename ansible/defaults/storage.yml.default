@@ -1,7 +1,7 @@
 ---
 storage:
   appdata:
-    paths:
+    path:
       opt:
         path: /opt/
         size: 20%VG

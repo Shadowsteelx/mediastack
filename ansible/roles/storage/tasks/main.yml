@@ -24,7 +24,7 @@
   with_dict: "{{ disks }}"
 - name: Create AppData directories
   ansible.builtin.file:
-    path: "{{ item.paths.path }}"
+    path: "{{ item.value.paths.path }}"
     state: directory
   with_dict: "{{ storage.appdata }}"
 - name: Create volume group
