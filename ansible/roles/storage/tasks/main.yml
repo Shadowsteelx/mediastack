@@ -35,7 +35,8 @@
   community.general.lvol:
     vg: "{{ storage.appdata.vg_name }}"
     lv: "{{ item.value.lv_name }}"
-    opts: "--type raid0 --stripes {{ appdata_disks | length }}"
+    pvs: "{{ appdata_disks | join(',') }}"
+#    opts: "--type raid0 --stripes {{ appdata_disks | length }}"
     size: "{{ item.value.size }}"
   with_dict: "{{ storage.appdata.paths }}"
 - name: Set opt filesystem
@@ -54,17 +55,74 @@
     path: "{{ item.value.path }}"
     src: "{{ '/dev/mapper/' + storage.appdata.vg_name + '-' + item.value.lv_name }}"
   with_dict: "{{ storage.appdata.paths }}"
-- name: Create partitions for data disks
+- name: Create media directory
+  ansible.builtin.file:
+    path: "{{ storage.media.path + '/' + item.value }}"
+    state: directory
+  when:
+  - not item.value in storage.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
+- name: Create partitions for media disks
   community.general.parted:
     device: "{{ item }}"
     label: gpt
     number: 1
     state: present
-    fs_type: xfs
-  loop: "{{ spinning_disks }}"
-- name: Create filesystem for spinning disks
+    fs_type: "{{ storage.media.filesystem }}"
+  loop: "{{ data_disks }}"
+- name: Create filesystem for media disks
   community.general.filesystem:
     dev: "{{ item + '1' }}"
-    fstype: xfs
-  loop: "{{ spinning_disks }}"
+    fstype: "{{ storage.media.filesystem }}"
+  loop: "{{ data_disks }}"
+- name: Mount media directory
+  ansible.posix.mount:
+    state: mounted
+    backup: yes
+    dump: 0
+    fstype: "{{ storage.media.filesystem }}"
+    opts: defaults
+    passno: 2
+    path: "{{ storage.media.path + '/' + item.value }}"
+    src: "{{ '/dev/' + item.key + '1' }}"
+  when:
+  - not item.value in storage.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
+- name: Create parity directory
+  ansible.builtin.file:
+    path: "{{ storage.parity.path + '/' + item.value }}"
+    state: directory
+  when:
+  - item.value in storage.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
+- name: Create partitions for parity disks
+  community.general.parted:
+    device: "{{ item }}"
+    label: gpt
+    number: 1
+    state: present
+    fs_type: "{{ storage.parity.filesystem }}"
+  loop: "{{ parity_disks }}"
+- name: Create filesystem for parity disks
+  community.general.filesystem:
+    dev: "{{ item + '1' }}"
+    fstype: "{{ storage.parity.filesystem }}"
+  loop: "{{ parity_disks }}"
+- name: Mount parity directory
+  ansible.posix.mount:
+    state: mounted
+    backup: yes
+    dump: 0
+    fstype: "{{ storage.parity.filesystem }}"
+    opts: defaults
+    passno: 2
+    path: "{{ storage.parity.path + '/' + item.value }}"
+    src: "{{ '/dev/' + item.key + '1' }}"
+  when:
+  - item.value in storage.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
 ...
