@@ -13,6 +13,7 @@
   ansible.builtin.apt_key:
     url: http://adelolmo.github.io/andoni.delolmo@gmail.com.gpg.key
     state: present
+    keyring: /etc/apt/trusted.gpg.d/andoni.delolmo@gmail.com.gpg
 - name: Add hd-idle repository
   apt_repository:
     repo: "{{ 'deb ' + 'http://adelolmo.github.io/' + ansible_distribution_release + ' ' + ansible_distribution_release + ' main' }}"
