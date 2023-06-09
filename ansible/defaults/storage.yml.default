@@ -1,24 +1,33 @@
 ---
 storage:
   appdata:
-    path:
+    vg_name: vg_appdata
+    paths:
       opt:
         path: /opt/
         size: 20%VG
-      backup:
+        lv_name: lv_opt
+        filesystem: btrfs
+      backups:
         path: /mnt/local/backups
         size: 20%VG
+        lv_name: lv_backups
+        filesystem: ext4
       downloads:
         path: /mnt/local/downloads
         size: 60%VG
+        lv_name: lv_downloads
+        filesystem: ext4
     serials:
     - "xxxxxxxxxxxxxxx"
     - "yyyyyyyyyyyyyyy"
     - "zzzzzzzzzzzzzzz"
   parity:
     path: /mnt/snapraid/parity
+    filesystem: xfs
     serials:
     - "xxxxxxxxxxxxxxx"
   media:
     path: /mnt/snapraid/pool
+    filesystem: ext4
 ...
