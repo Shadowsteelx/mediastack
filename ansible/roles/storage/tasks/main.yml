@@ -1,34 +1,32 @@
 ---
-- name: disks
-  tasks:
-    - name: Collect disks
-      ansible.builtin.set_fact:
-        disks: "{{ disks | default({}) | combine({item.key:item.value.serial}) }}"
-      when:
-      - item.key.startswith("sd") or item.key.startswith("nvme")
-      with_dict: "{{ ansible_devices }}"
-    - name: Collect parity disks
-      ansible.builtin.set_fact:
-        parity_disks: "{{ parity_disks|default([]) + ['/dev/' + item.key] }}"
-      when: item.value in disks.parity.serials
-      with_dict: "{{ disks }}"
-    - name: Collect data disks
-      ansible.builtin.set_fact:
-        data_disks: "{{ data_disks|default([]) + ['/dev/' + item.key] }}"
-      when:
-      - not item.value in disks.parity.serials
-      - item.key.startswith("sd")
-      with_dict: "{{ disks }}"
-    - name: Collect appdata disks
-      ansible.builtin.set_fact:
-        appdata_disks: "{{ appdata_disks|default([]) + ['/dev/' + item.key] }}"
-      when: item.value in disks.appdata.serials
-      with_dict: "{{ disks }}"
-    - name: Create AppData directories
-      ansible.builtin.file:
-        path: "{{ item.paths.path }}"
-        state: directory
-      with_dict: "{{ storage.appdata }}"
+- name: Collect disks
+  ansible.builtin.set_fact:
+    disks: "{{ disks | default({}) | combine({item.key:item.value.serial}) }}"
+  when:
+  - item.key.startswith("sd") or item.key.startswith("nvme")
+  with_dict: "{{ ansible_devices }}"
+- name: Collect parity disks
+  ansible.builtin.set_fact:
+    parity_disks: "{{ parity_disks|default([]) + ['/dev/' + item.key] }}"
+  when: item.value in disks.parity.serials
+  with_dict: "{{ disks }}"
+- name: Collect data disks
+  ansible.builtin.set_fact:
+    data_disks: "{{ data_disks|default([]) + ['/dev/' + item.key] }}"
+  when:
+  - not item.value in disks.parity.serials
+  - item.key.startswith("sd")
+  with_dict: "{{ disks }}"
+- name: Collect appdata disks
+  ansible.builtin.set_fact:
+    appdata_disks: "{{ appdata_disks|default([]) + ['/dev/' + item.key] }}"
+  when: item.value in disks.appdata.serials
+  with_dict: "{{ disks }}"
+- name: Create AppData directories
+  ansible.builtin.file:
+    path: "{{ item.paths.path }}"
+    state: directory
+  with_dict: "{{ storage.appdata }}"
 #    - name: Create volume group
 #      community.general.lvg:
 #        vg: vg_appdata
